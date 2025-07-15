@@ -241,7 +241,13 @@ export default function Dashboard({ accessToken, email }: DashboardProps) {
             <TabsTrigger value="saved">Saved</TabsTrigger>
           </TabsList>
           <TabsContent value="all">
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {/* Category Tabs */}
+            <CategoryTabs
+              activeCategory={activeCategory}
+              onCategoryChange={setActiveCategory}
+              categoryStats={categoryStats}
+            />
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
               {filteredOpportunities.map((opportunity, index) => (
                 <div key={opportunity.id} style={{ animationDelay: `${index * 100}ms` }}>
                   <OpportunityCard
