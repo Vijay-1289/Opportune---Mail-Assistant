@@ -1,4 +1,5 @@
-import QRCode from 'qrcode.react';
+// @ts-ignore
+const QRCode = require('qrcode.react');
 
 export function MobileAppBanner() {
   return (
