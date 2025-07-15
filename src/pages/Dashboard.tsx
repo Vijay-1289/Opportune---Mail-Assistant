@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import GmailService from "@/services/gmailApi";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { MobileAppBanner } from "@/components/MobileAppBanner";
+// import { MobileAppBanner } from "@/components/MobileAppBanner";
 
 interface DashboardProps {
   accessToken?: string;
@@ -227,7 +227,6 @@ export default function Dashboard({ accessToken, email }: DashboardProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <MobileAppBanner />
       {/* Header */}
       <Header
         searchQuery={searchQuery}
