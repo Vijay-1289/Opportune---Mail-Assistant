@@ -13,9 +13,10 @@ import GmailService from "@/services/gmailApi";
 
 interface DashboardProps {
   accessToken?: string;
+  email?: string;
 }
 
-export default function Dashboard({ accessToken }: DashboardProps) {
+export default function Dashboard({ accessToken, email }: DashboardProps) {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<CategoryType | 'all'>('all');
