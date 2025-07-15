@@ -1,13 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Mail, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-
-const GMAIL_API_KEY = "AIzaSyCXM2sYclXOGweZ4PthNsyQ-EezYn7TTNc";
-const CLIENT_ID = "503593557386-g5gt13h4p3rbseg8u72hhcbkji0s78dm.apps.googleusercontent.com";
-const DISCOVERY_DOC = "https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest";
-const SCOPES = "https://www.googleapis.com/auth/gmail.readonly profile email";
+import { supabase } from "@/integrations/supabase/client";
 
 interface LoginProps {
   onLoginSuccess: (accessToken: string, email: string) => void;
@@ -15,81 +11,39 @@ interface LoginProps {
 
 const Login = ({ onLoginSuccess }: LoginProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    initializeGapi();
-  }, []);
-
-  const initializeGapi = async () => {
-    try {
-      if (!window.gapi) {
-        await loadGoogleScript();
-      }
-      await window.gapi.load("client:auth2", async () => {
-        await window.gapi.client.init({
-          apiKey: GMAIL_API_KEY,
-          clientId: CLIENT_ID,
-          discoveryDocs: [DISCOVERY_DOC],
-          scope: SCOPES,
-        });
-        setIsInitialized(true);
-      });
-    } catch (error) {
-      toast({
-        title: "Initialization Error",
-        description: "Failed to initialize Google API. Please check your configuration.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const loadGoogleScript = (): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      if (document.querySelector('script[src*="apis.google.com"]')) {
-        resolve();
-        return;
-      }
-      const script = document.createElement("script");
-      script.src = "https://apis.google.com/js/api.js";
-      script.onload = () => resolve();
-      script.onerror = reject;
-      document.head.appendChild(script);
-    });
-  };
-
   const handleGoogleSignIn = async () => {
-    if (!isInitialized) {
-      toast({
-        title: "Not Ready",
-        description: "Google API is still initializing. Please wait.",
-        variant: "destructive",
-      });
-      return;
-    }
     setIsLoading(true);
     try {
-      const authInstance = window.gapi.auth2.getAuthInstance();
-      const user = await authInstance.signIn();
-      const accessToken = user.getAuthResponse().access_token;
-      const profile = user.getBasicProfile();
-      const email = profile.getEmail();
-      toast({
-        title: "Success!",
-        description: `Logged in as ${email}`,
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          scopes: 'https://www.googleapis.com/auth/gmail.readonly email profile openid',
+          queryParams: { access_type: 'offline', prompt: 'consent' }
+        }
       });
-      onLoginSuccess(accessToken, email);
-    } catch (error) {
+      if (error) throw error;
+      // The redirect will happen automatically. After redirect, handle session in parent.
+    } catch (error: any) {
       toast({
         title: "Sign-in Failed",
-        description: "Failed to connect to Gmail. Please try again.",
+        description: error.message || "Failed to connect to Gmail. Please try again.",
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };
+
+  // Listen for Supabase session changes (after redirect)
+  useState(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session && session.provider_token && session.user?.email) {
+        onLoginSuccess(session.provider_token, session.user.email);
+      }
+    });
+    return () => subscription.unsubscribe();
+  });
 
   return (
     <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-6">
@@ -113,7 +67,7 @@ const Login = ({ onLoginSuccess }: LoginProps) => {
           </div>
           <Button
             onClick={handleGoogleSignIn}
-            disabled={isLoading || !isInitialized}
+            disabled={isLoading}
             className="w-full"
             size="lg"
           >
@@ -124,11 +78,6 @@ const Login = ({ onLoginSuccess }: LoginProps) => {
             )}
             {isLoading ? "Connecting..." : "Login with Google"}
           </Button>
-          {!isInitialized && (
-            <p className="text-xs text-muted-foreground text-center">
-              Initializing Google API...
-            </p>
-          )}
         </CardContent>
       </Card>
     </div>
