@@ -12,7 +12,7 @@ declare global {
 }
 
 const GMAIL_API_KEY = "AIzaSyCXM2sYclXOGweZ4PthNsyQ-EezYn7TTNc";
-const CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID"; // You'll need to provide this
+const CLIENT_ID = "503593557386-g5gt13h4p3rbseg8u72hhcbkji0s78dm.apps.googleusercontent.com"; // Real Google OAuth Client ID
 const DISCOVERY_DOC = "https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest";
 const SCOPES = "https://www.googleapis.com/auth/gmail.readonly";
 
