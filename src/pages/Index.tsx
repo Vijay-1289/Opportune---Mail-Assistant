@@ -39,7 +39,7 @@ const Index = () => {
             </div>
             <div className="text-left">
               <h1 className="text-4xl md:text-5xl font-bold text-white">
-                OpportuniSort
+                Opportune
               </h1>
               <p className="text-white/80 text-lg">Your Career Mail Assistant</p>
             </div>
@@ -86,7 +86,7 @@ const Index = () => {
       <div className="bg-background/95 backdrop-blur-md">
         <div className="container mx-auto px-6 py-16">
           <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold mb-4">Why OpportuniSort?</h3>
+            <h3 className="text-3xl font-bold mb-4">Why Opportune?</h3>
             <p className="text-xl text-muted-foreground">Turn your inbox into your career command center</p>
           </div>
 

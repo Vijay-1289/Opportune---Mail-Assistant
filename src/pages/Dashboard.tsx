@@ -10,6 +10,7 @@ import { OpportunityModal } from "@/components/OpportunityModal";
 import { Opportunity, CategoryType, FilterState } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import GmailService from "@/services/gmailApi";
+import { supabase } from "@/integrations/supabase/client";
 
 interface DashboardProps {
   accessToken?: string;
@@ -31,6 +32,7 @@ export default function Dashboard({ accessToken, email }: DashboardProps) {
     dateRange: 'all',
     company: ''
   });
+  const [userProfile, setUserProfile] = useState<{ name?: string; email: string; avatarUrl?: string } | null>(null);
 
   const { toast } = useToast();
 
@@ -39,6 +41,25 @@ export default function Dashboard({ accessToken, email }: DashboardProps) {
       loadGmailData();
     }
   }, [accessToken]);
+
+  useEffect(() => {
+    // Get user info from Supabase session
+    const session = supabase.auth.getSession().then(({ data }) => {
+      const user = data.session?.user;
+      if (user) {
+        setUserProfile({
+          name: user.user_metadata?.name || user.email,
+          email: user.email,
+          avatarUrl: user.user_metadata?.avatar_url,
+        });
+      }
+    });
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.reload();
+  };
 
   const loadGmailData = async () => {
     if (!accessToken) return;
@@ -192,7 +213,12 @@ export default function Dashboard({ accessToken, email }: DashboardProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+      <Header
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        user={userProfile || { email: email || "" }}
+        onLogout={handleLogout}
+      />
       
       {/* Category Tabs */}
       <CategoryTabs 
