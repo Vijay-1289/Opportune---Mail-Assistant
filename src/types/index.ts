@@ -17,6 +17,7 @@ export interface Opportunity {
   requirements?: string[];
   applicationUrl?: string;
   isSaved?: boolean;
+  messageId?: string;
 }
 
 export interface CategoryStats {

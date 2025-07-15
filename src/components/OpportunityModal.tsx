@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Separator } from "@/components/ui/separator";
 import { Opportunity } from "@/types";
 import { categoryIcons } from "@/types";
+import { useEffect, useState } from "react";
 
 interface OpportunityModalProps {
   opportunity: Opportunity | null;
@@ -28,10 +29,30 @@ export function OpportunityModal({ opportunity, isOpen, onClose }: OpportunityMo
   };
 
   const isUrgent = opportunity.deadline && new Date(opportunity.deadline) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const isDeadlineSoon = opportunity.deadline && new Date(opportunity.deadline) <= new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+
+  // Gmail redirect URL (assume messageId is present)
+  const gmailUrl = opportunity.messageId
+    ? `https://mail.google.com/mail/u/0/#inbox/${opportunity.messageId}`
+    : undefined;
+
+  // Deadline notification state
+  const [showDeadlineBanner, setShowDeadlineBanner] = useState(false);
+  useEffect(() => {
+    if (isDeadlineSoon) setShowDeadlineBanner(true);
+    else setShowDeadlineBanner(false);
+  }, [isDeadlineSoon]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        {/* Deadline Notification Banner */}
+        {showDeadlineBanner && (
+          <div className="mb-4 p-3 rounded bg-warning text-warning-foreground font-semibold flex items-center gap-2 animate-pulse-glow">
+            <Clock className="w-4 h-4" />
+            Deadline is approaching soon! Don't miss out.
+          </div>
+        )}
         <DialogHeader className="space-y-4">
           <div className="flex items-start justify-between">
             <div className="flex items-center space-x-3">
@@ -164,10 +185,14 @@ export function OpportunityModal({ opportunity, isOpen, onClose }: OpportunityMo
                   <Share className="w-4 h-4 mr-2" />
                   Share
                 </Button>
-                <Button variant="outline" size="sm" className="justify-start">
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Open Email
-                </Button>
+                {gmailUrl && (
+                  <Button variant="outline" size="sm" className="justify-start" asChild>
+                    <a href={gmailUrl} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Open in Gmail
+                    </a>
+                  </Button>
+                )}
               </div>
             </div>
           </div>
