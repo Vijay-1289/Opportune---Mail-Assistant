@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CategoryType } from "@/types";
-import { categoryLabels, categoryIcons } from "@/data/mockData";
+import { categoryLabels, categoryIcons } from "@/types";
 
 interface CategoryTabsProps {
   activeCategory: CategoryType | 'all';

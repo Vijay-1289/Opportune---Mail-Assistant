@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Opportunity } from "@/types";
-import { categoryIcons } from "@/data/mockData";
+import { categoryIcons } from "@/types";
 
 interface OpportunityModalProps {
   opportunity: Opportunity | null;

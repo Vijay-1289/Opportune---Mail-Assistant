@@ -7,7 +7,6 @@ import { StatsOverview } from "@/components/StatsOverview";
 import { OpportunityCard } from "@/components/OpportunityCard";
 import { FilterPanel } from "@/components/FilterPanel";
 import { OpportunityModal } from "@/components/OpportunityModal";
-import { mockOpportunities } from "@/data/mockData";
 import { Opportunity, CategoryType, FilterState } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import GmailService from "@/services/gmailApi";
@@ -17,7 +16,7 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ accessToken }: DashboardProps) {
-  const [opportunities, setOpportunities] = useState<Opportunity[]>(mockOpportunities);
+  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<CategoryType | 'all'>('all');
   const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
@@ -71,7 +70,7 @@ export default function Dashboard({ accessToken }: DashboardProps) {
       console.error('Error loading Gmail data:', error);
       toast({
         title: "Error",
-        description: "Failed to load data from Gmail. Using demo data instead.",
+        description: "Failed to load data from Gmail.",
         variant: "destructive",
       });
     } finally {

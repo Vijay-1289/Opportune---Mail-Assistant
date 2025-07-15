@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Opportunity } from "@/types";
-import { categoryIcons } from "@/data/mockData";
+import { categoryIcons } from "@/types";
 
 interface OpportunityCardProps {
   opportunity: Opportunity;

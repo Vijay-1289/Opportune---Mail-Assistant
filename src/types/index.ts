@@ -33,3 +33,21 @@ export interface FilterState {
   dateRange: 'all' | 'today' | 'week' | 'month';
   company: string;
 }
+
+export const categoryLabels = {
+  internship: "Internships",
+  job: "Jobs", 
+  hackathon: "Hackathons",
+  scholarship: "Scholarships",
+  event: "Events",
+  competition: "Competitions"
+} as const;
+
+export const categoryIcons = {
+  internship: "🎓",
+  job: "💼", 
+  hackathon: "⚔️",
+  scholarship: "🏆",
+  event: "📅",
+  competition: "🏅"
+} as const;
