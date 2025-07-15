@@ -33,7 +33,7 @@ export function OpportunityModal({ opportunity, isOpen, onClose }: OpportunityMo
 
   // Gmail redirect URL (assume messageId is present)
   const gmailUrl = opportunity.messageId
-    ? `https://mail.google.com/mail/u/0/#inbox/${opportunity.messageId}`
+    ? `https://mail.google.com/mail/u/0/#all/${opportunity.messageId}`
     : undefined;
 
   // Deadline notification state
