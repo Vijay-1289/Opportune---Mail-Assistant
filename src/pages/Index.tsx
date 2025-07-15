@@ -3,12 +3,28 @@ import { Mail, Sparkles, ArrowRight, Shield, Zap, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Dashboard from "./Dashboard";
+import Auth from "./Auth";
 
 const Index = () => {
   const [showDemo, setShowDemo] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
 
   if (showDemo) {
-    return <Dashboard />;
+    return <Dashboard accessToken={accessToken || undefined} />;
+  }
+
+  if (showAuth) {
+    return (
+      <Auth
+        onBack={() => setShowAuth(false)}
+        onAuthSuccess={(token) => {
+          setAccessToken(token);
+          setShowAuth(false);
+          setShowDemo(true);
+        }}
+      />
+    );
   }
 
   return (
@@ -55,6 +71,7 @@ const Index = () => {
               <Button 
                 size="lg"
                 variant="outline"
+                onClick={() => setShowAuth(true)}
                 className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-6"
               >
                 Connect Gmail

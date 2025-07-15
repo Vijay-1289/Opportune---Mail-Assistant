@@ -8,11 +8,15 @@ export interface Opportunity {
   deadline?: string;
   location?: string;
   description: string;
-  isNew: boolean;
+  isNew?: boolean;
   tags: string[];
   attachments?: number;
   salary?: string;
   type?: string;
+  content?: string;
+  requirements?: string[];
+  applicationUrl?: string;
+  isSaved?: boolean;
 }
 
 export interface CategoryStats {
