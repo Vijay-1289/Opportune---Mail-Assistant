@@ -11,6 +11,7 @@ import { Opportunity, CategoryType, FilterState } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import GmailService from "@/services/gmailApi";
 import { supabase } from "@/integrations/supabase/client";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 interface DashboardProps {
   accessToken?: string;
@@ -33,6 +34,7 @@ export default function Dashboard({ accessToken, email }: DashboardProps) {
     company: ''
   });
   const [userProfile, setUserProfile] = useState<{ name?: string; email: string; avatarUrl?: string } | null>(null);
+  const [activeTab, setActiveTab] = useState<'all' | 'saved'>('all');
 
   const { toast } = useToast();
 
@@ -55,6 +57,15 @@ export default function Dashboard({ accessToken, email }: DashboardProps) {
       }
     });
   }, []);
+
+  // Persist savedOpportunities in localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('savedOpportunities');
+    if (saved) setSavedOpportunities(JSON.parse(saved));
+  }, []);
+  useEffect(() => {
+    localStorage.setItem('savedOpportunities', JSON.stringify(savedOpportunities));
+  }, [savedOpportunities]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -153,6 +164,9 @@ export default function Dashboard({ accessToken, email }: DashboardProps) {
     });
   }, [searchQuery, activeCategory, filters, opportunities]);
 
+  // Filtered lists
+  const savedOpportunitiesList = opportunities.filter(opp => savedOpportunities.includes(opp.id));
+
   // Calculate category statistics
   const categoryStats = useMemo(() => {
     const stats: Record<CategoryType | 'all', { total: number; new: number; urgent: number }> = {
@@ -219,78 +233,48 @@ export default function Dashboard({ accessToken, email }: DashboardProps) {
         user={userProfile || { email: email || "" }}
         onLogout={handleLogout}
       />
-      
-      {/* Category Tabs */}
-      <CategoryTabs 
-        activeCategory={activeCategory}
-        onCategoryChange={setActiveCategory}
-        categoryStats={categoryStats}
-      />
-
-      {/* Main Content */}
-      <div className="container mx-auto px-6 py-8">
-        {/* Loading State */}
-        {isLoading && (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-6 h-6 animate-spin mr-2" />
-            <span>Loading opportunities from Gmail...</span>
-          </div>
-        )}
-
-        {!isLoading && (
-          <>
-            {/* Stats Overview */}
-            <StatsOverview 
-              totalOpportunities={opportunities.length}
-              newOpportunities={newOpportunities}
-              urgentDeadlines={urgentDeadlines}
-              savedOpportunities={savedOpportunities.length}
-            />
-
-            {/* Results Header */}
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl font-bold">
-                  {activeCategory === 'all' ? 'All Opportunities' : 
-                   activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}
-                </h2>
-                <p className="text-muted-foreground">
-                  Showing {filteredOpportunities.length} of {opportunities.length} opportunities
-                  {searchQuery && ` for "${searchQuery}"`}
-                  {accessToken && " from your Gmail"}
-                </p>
-              </div>
-            </div>
-
-            {/* Opportunities Grid */}
-            {filteredOpportunities.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredOpportunities.map((opportunity, index) => (
-                  <div 
-                    key={opportunity.id} 
-                    style={{ animationDelay: `${index * 100}ms` }}
-                  >
-                    <OpportunityCard
-                      opportunity={opportunity}
-                      onSave={handleSaveOpportunity}
-                      onView={handleViewOpportunity}
-                    />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <div className="w-24 h-24 mx-auto mb-4 bg-muted rounded-full flex items-center justify-center">
-                  <span className="text-3xl">🔍</span>
+      {/* Tabs for All/Saved */}
+      <div className="container mx-auto px-6 pt-4">
+        <Tabs value={activeTab} onValueChange={val => setActiveTab(val as 'all' | 'saved')} className="mb-6">
+          <TabsList>
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="saved">Saved</TabsTrigger>
+          </TabsList>
+          <TabsContent value="all">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {filteredOpportunities.map((opportunity, index) => (
+                <div key={opportunity.id} style={{ animationDelay: `${index * 100}ms` }}>
+                  <OpportunityCard
+                    opportunity={opportunity}
+                    onSave={handleSaveOpportunity}
+                    onView={handleViewOpportunity}
+                  />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">No opportunities found</h3>
-                <p className="text-muted-foreground">
-                  Try adjusting your search or filters to find more opportunities.
-                </p>
-              </div>
-            )}
-          </>
-        )}
+              ))}
+            </div>
+          </TabsContent>
+          <TabsContent value="saved">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {savedOpportunitiesList.length > 0 ? savedOpportunitiesList.map((opportunity, index) => (
+                <div key={opportunity.id} style={{ animationDelay: `${index * 100}ms` }}>
+                  <OpportunityCard
+                    opportunity={opportunity}
+                    onSave={handleSaveOpportunity}
+                    onView={handleViewOpportunity}
+                  />
+                </div>
+              )) : (
+                <div className="text-center py-12 col-span-3">
+                  <div className="w-24 h-24 mx-auto mb-4 bg-muted rounded-full flex items-center justify-center">
+                    <span className="text-3xl">🔖</span>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">No saved opportunities</h3>
+                  <p className="text-muted-foreground">Save opportunities to view them here.</p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Filter Panel */}
