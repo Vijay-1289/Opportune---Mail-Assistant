@@ -3,13 +3,6 @@
   <em>Your AI-powered email partner — helping you organize, prioritize, and respond faster.</em>
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/github/license/Vijay-1289/Opportune---Mail-Assistant?style=flat-square" />
-  <img src="https://img.shields.io/github/stars/Vijay-1289/Opportune---Mail-Assistant?style=flat-square&color=yellow" />
-  <img src="https://img.shields.io/github/issues/Vijay-1289/Opportune---Mail-Assistant?style=flat-square&color=red" />
-  <img src="https://img.shields.io/github/forks/Vijay-1289/Opportune---Mail-Assistant?style=flat-square&color=blue" />
-</p>
-
 ---
 
 ## 🚀 Overview
