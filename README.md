@@ -40,7 +40,7 @@ Whether you’re a student, professional, or business owner, **Opportune** ensur
 ---
 
 ## 📦 Installation
-
+``` bash
 # Clone the repository
 git clone https://github.com/Vijay-1289/Opportune---Mail-Assistant.git
 
